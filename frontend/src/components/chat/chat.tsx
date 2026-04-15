@@ -14,24 +14,29 @@ type Message = {
 export default function ChatContainer({ roomID }: { roomID: string }) {
   const [message, setMessage] = useState('');
   const [messageReceived, setMessageReceived] = useState<Message[]>([]);
-  const [socketID, setSocketID] = useState<string | null | undefined>(null);
 
   useEffect(() => {
-    socket.on('connect', () => {
-      setSocketID(socket.id);
-    });
+    const joinRoom = () => {
+      socket.emit('joinRoom', roomID);
+    };
 
-    socket.emit('joinRoom', roomID);
+    if (socket.connected) {
+      joinRoom();
+    }
+
+    socket.on('connect', joinRoom);
 
     return () => {
-      socket.off('connect');
+      socket.off('connect', joinRoom);
     };
   }, [roomID]);
 
   useEffect(() => {
-    socket.on('receiveMessage', (data) => {
+    const handleReceiveMessage = (data: Message) => {
       setMessageReceived((prev) => [...prev, data]);
-    });
+    };
+
+    socket.on('receiveMessage', handleReceiveMessage);
 
     return () => {
       socket.off('receiveMessage');
@@ -41,7 +46,7 @@ export default function ChatContainer({ roomID }: { roomID: string }) {
   const sendMessage = () => {
     if (!message.trim()) return;
 
-    socket.emit('sendMessage', { senderID: socket.id, message });
+    socket.emit('sendMessage', { senderID: socket.id, message, roomID });
 
     setMessage('');
   };
@@ -50,7 +55,7 @@ export default function ChatContainer({ roomID }: { roomID: string }) {
     <div className="bg-secondary h-100 w-140 overflow-hidden rounded-md border-2 shadow-sm shadow-white">
       <div className="flex h-75 w-full flex-col gap-4 overflow-auto p-4">
         {messageReceived.map((msg, idx) => (
-          <div key={idx} className={`${socketID === msg.senderID ? 'self-end' : ''}`}>
+          <div key={idx} className={`${socket.id === msg.senderID ? 'self-end' : ''}`}>
             <p className="text-muted-foreground text-xs font-semibold">{msg.senderID}</p>
             <p className="text-sm">{msg.message}</p>
           </div>

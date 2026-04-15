@@ -23,7 +23,7 @@ io.on("connection", (socket) => {
     });
 
     socket.on("sendMessage", (data) => {
-        io.to(socket.roomID).emit("receiveMessage",
+        io.to(data.roomID).emit("receiveMessage",
             {
                 senderID: data.senderID,
                 message: data.message

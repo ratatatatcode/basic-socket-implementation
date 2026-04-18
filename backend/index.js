@@ -19,7 +19,6 @@ io.on("connection", (socket) => {
     console.log(`Connected id: ${socket.id}`);
     socket.on("joinRoom", (roomID) => {
         socket.join(roomID);
-        socket.roomID = roomID;
     });
 
     socket.on("sendMessage", (data) => {

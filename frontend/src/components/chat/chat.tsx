@@ -21,7 +21,7 @@ export default function ChatContainer({ roomID }: { roomID: string }) {
     };
 
     if (socket.connected) {
-      joinRoom();
+      handleJoinRoom();
     }
 
     socket.on('connect', handleJoinRoom);

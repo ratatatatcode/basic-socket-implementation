@@ -16,18 +16,18 @@ export default function ChatContainer({ roomID }: { roomID: string }) {
   const [messageReceived, setMessageReceived] = useState<Message[]>([]);
 
   useEffect(() => {
-    const handleJoinRoom = () => {
+    const handleConnect = () => {
       socket.emit('joinRoom', roomID);
     };
 
     if (socket.connected) {
-      handleJoinRoom();
+      handleConnect();
     }
 
-    socket.on('connect', handleJoinRoom);
+    socket.on('connect', handleConnect);
 
     return () => {
-      socket.off('connect', handleJoinRoom);
+      socket.off('connect', handleConnect);
     };
   }, [roomID]);
 

@@ -36,10 +36,10 @@ export default function ChatContainer({ roomID }: { roomID: string }) {
       setMessageReceived((prev) => [...prev, data]);
     };
 
-    socket.off('receiveMessage', handleReceiveMessage);
+    socket.on('receiveMessage', handleReceiveMessage);
 
     return () => {
-      socket.off('receiveMessage');
+      socket.off('receiveMessage', handleReceiveMessage);
     };
   }, []);
 
